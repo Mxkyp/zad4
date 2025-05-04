@@ -2,36 +2,44 @@ import sounddevice as sd
 import numpy as np
 import analyzer as a
 import visualiser as vis
+import sys
 from scipy.io.wavfile import write
 
-# Parametry nagrywania
-SAMPLE_RATE = 44100  # częstotliwość próbkowania
 CHANNELS = 1  # liczba kanałów (mono)
-DURATION = 5  # czas nagrania w sekundach
+DURATION = 3  # czas nagrania w sekundach
 
-
-def record(dtype: str):
+def record(bitDepth: int, sample_rate: int):
     print("Nagrywanie...")
     audio_data = sd.rec(
-        int(DURATION * SAMPLE_RATE),
-        samplerate=SAMPLE_RATE,
+        int(DURATION * sample_rate),
+        samplerate=sample_rate,
         channels=CHANNELS,
-        dtype=dtype,
+        dtype="int"+str(bitDepth),
     )
     sd.wait()  # czekaj na zakończenie nagrania
     print("Nagrywanie zakończone.")
     return audio_data
 
+"""1-script 2-frequency, 3-depth, 4-quantization bits)"""
+def checkInput():
+    if len(sys.argv) != 4:
+        raise exception("wrong argc")
+
+
 
 # Nagrywanie dźwięku
-audio_data = record("int16")
-quantized_audio = a.quantinize(audio_data, 8)
+checkInput()
+sample_rate = int(sys.argv[1])
+bitDepth = int(sys.argv[2])
+quantBits = int(sys.argv[3])
+audio_data = record(bitDepth, sample_rate)
+quantized_audio = a.quantinize(audio_data, quantBits)
 
 # Zapis do WAV
-write("original_audio.wav", SAMPLE_RATE, audio_data)
-write("quantized_audio.wav", SAMPLE_RATE, quantized_audio)
-print("Pliki WAV zapisane: original_audio.wav, quantized_audio.wav")
-vis.plotSoundWave(vis.Sample("original", audio_data, SAMPLE_RATE, 16), vis.Sample("quantized", quantized_audio, SAMPLE_RATE, 16))
+write("original.wav", sample_rate, audio_data)
+write("quantized.wav", sample_rate, quantized_audio)
+print("Pliki WAV zapisane: original.wav, quantized.wav")
+vis.plotSoundWave(vis.Sample("original", audio_data, sample_rate, bitDepth), vis.Sample("quantized", quantized_audio, sample_rate, quantBits))
 
 snr_value = a.calculate_snr(audio_data, quantized_audio)
 print(f"SNR: {snr_value:.2f} dB")
