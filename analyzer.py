@@ -1,16 +1,22 @@
 import numpy as np
 
-def max_unsigned(bits):
-    return 2**bits
+def getDType(bitResolution):
+    if bitResolution <= 8:
+        return np.uint8
+    if bitResolution == 16:
+        return np.int16
+    if bitResolution == 32:
+        return np.int32
 
 
-def quantinize(audio_data: np.ndarray, bitResolution):
-    audio_data_float = audio_data / 2**16 # 16 bit audio
+def quantinize(audio_data: np.ndarray, audioBitDepth, quantBits):
+    audio_data_float = audio_data / 2**audioBitDepth # 16 bit audio
 
-    audio_data_8bit = audio_data_float * 2**bitResolution
-    audio_data_8bit = audio_data_8bit.astype(int)
+    quantized = audio_data_float * 2**quantBits
+    dtype = getDType(quantBits)
+    quantized = quantized.astype(dtype)
 
-    return audio_data_8bit 
+    return quantized 
 
 
 def calculate_snr(original, quantized):

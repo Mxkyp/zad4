@@ -33,7 +33,7 @@ sample_rate = int(sys.argv[1])
 bitDepth = int(sys.argv[2])
 quantBits = int(sys.argv[3])
 audio_data = record(bitDepth, sample_rate)
-quantized_audio = a.quantinize(audio_data, quantBits)
+quantized_audio = a.quantinize(audio_data, bitDepth, quantBits)
 
 # Zapis do WAV
 write("original.wav", sample_rate, audio_data)
