@@ -23,7 +23,7 @@ def record(bitDepth: int, sample_rate: int):
 """1-script 2-frequency, 3-depth, 4-quantization bits)"""
 def checkInput():
     if len(sys.argv) != 4:
-        raise exception("wrong argc")
+        raise Exception("wrong argc")
 
 
 
