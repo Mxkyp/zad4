@@ -40,5 +40,10 @@ write("quantized.wav", sample_rate, quantized_audio)
 print("Pliki WAV zapisane: original.wav, quantized.wav")
 vis.plotSoundWave(vis.Sample("original", audio_data, sample_rate, bitDepth), vis.Sample("quantized", quantized_audio, sample_rate, quantBits))
 
-snr_value = a.calculate_snr(audio_data, quantized_audio, bitDepth, quantBits)
+reconstructed = a.reconstruct(quantized_audio, quantBits, bitDepth)
+
+snr_value = a.calculate_snr(audio_data, reconstructed)
+mse_value = a.calculate_mse(audio_data, reconstructed)
+
 print(f"SNR: {snr_value:.2f} dB")
+print(f"MSE: {mse_value:.2f} ")

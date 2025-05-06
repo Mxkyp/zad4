@@ -18,7 +18,7 @@ def quantinize(audio_data: np.ndarray, audioBitDepth, quantBits):
 
     return quantized 
 
-def convert_bit_depth(audio_in: np.ndarray, src_bit_depth: int, target_bit_depth: int):
+def reconstruct(audio_in: np.ndarray, src_bit_depth: int, target_bit_depth: int):
     # Step 1: Normalize input to float [-1.0, 1.0]
     max_src_value = (2 ** (src_bit_depth - 1)) - 1
     audio_float = audio_in.astype(np.float64) / max_src_value
@@ -42,18 +42,12 @@ def get_dtype_for_bit_depth(bit_depth: int):
     else:
         raise ValueError("Unsupported bit depth")
 
-def calculate_snr(original, quantized, bitDepth, quantBits):
-    
-    # Reconstruct quantized signal back to original bit depth
-    reconstructed = convert_bit_depth(quantized, quantBits, bitDepth)
-
+def calculate_snr(original, reconstructed):
     noise = original.astype(np.float64) - reconstructed.astype(np.float64)
-
+    
     # Signal and noise power (use float to avoid overflow)
     signal_power = np.mean(original.astype(np.float64) ** 2)
     noise_power = np.mean(noise ** 2)
-    print(signal_power)
-    print(noise_power)
 
     # Avoid division by zero
     if noise_power == 0:
@@ -62,3 +56,12 @@ def calculate_snr(original, quantized, bitDepth, quantBits):
     snr = 10 * np.log10(signal_power / noise_power)
 
     return snr
+
+def calculate_mse(original, reconstructed):
+    # Oblicz różnicę pomiędzy oryginalnym sygnałem a rekonstruowanym
+    error = original.astype(np.float64) - reconstructed.astype(np.float64)
+    # Oblicz błąd średniokwadratowy
+    mse = np.mean(error**2)
+    return mse
+
+
