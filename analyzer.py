@@ -21,7 +21,7 @@ def quantinize(audio_data: np.ndarray, audioBitDepth, quantBits):
 def convert_bit_depth(audio_in: np.ndarray, src_bit_depth: int, target_bit_depth: int):
     # Step 1: Normalize input to float [-1.0, 1.0]
     max_src_value = (2 ** (src_bit_depth - 1)) - 1
-    audio_float = audio_in.astype(np.float32) / max_src_value
+    audio_float = audio_in.astype(np.float64) / max_src_value
 
     # Step 2: Scale to target bit depth
     max_target_value = (2 ** (target_bit_depth - 1)) - 1
@@ -47,12 +47,13 @@ def calculate_snr(original, quantized, bitDepth, quantBits):
     # Reconstruct quantized signal back to original bit depth
     reconstructed = convert_bit_depth(quantized, quantBits, bitDepth)
 
-    # Always subtract directly
     noise = original.astype(np.float64) - reconstructed.astype(np.float64)
 
     # Signal and noise power (use float to avoid overflow)
     signal_power = np.mean(original.astype(np.float64) ** 2)
     noise_power = np.mean(noise ** 2)
+    print(signal_power)
+    print(noise_power)
 
     # Avoid division by zero
     if noise_power == 0:

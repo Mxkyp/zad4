@@ -5,8 +5,8 @@ import visualiser as vis
 import sys
 from scipy.io.wavfile import write
 
-CHANNELS = 1  # liczba kanałów (mono)
-DURATION = 3  # czas nagrania w sekundach
+CHANNELS = 1  #  (mono)
+DURATION = 3  # record duration 
 
 def record(bitDepth: int, sample_rate: int):
     print("Nagrywanie...")
